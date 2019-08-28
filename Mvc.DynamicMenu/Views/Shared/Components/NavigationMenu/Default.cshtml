@@ -1,0 +1,45 @@
+﻿@model List<Mvc.DynamicMenu.Models.NavigationMenuViewModel>
+@{
+	ViewData["Title"] = "NavigationMenu";
+}
+<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Dynamic Menu</a>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+	<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item">
+			<a class="nav-link text" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link text" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
+		</li>
+		@*Menu Items from the database*@
+		@foreach (var item in Model)
+		{
+			if (item.ParentMenuId == null) //Level one items will have null parent id
+			{
+				if (!string.IsNullOrWhiteSpace(item.ControllerName))
+				{
+					<li class="nav-item active">
+						<a class="nav-link text" asp-area="" asp-controller="@item.ControllerName" asp-action="@item.ActionName">@item.Name</a>
+					</li>
+				}
+				var children = Model.Where(x => x.ParentMenuId == item.Id).ToList();
+				if (children != null)
+				{
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@item.Name</a>
+						<div class="dropdown-menu" aria-labelledby="dropdown01">
+							@foreach (var itm in children)
+							{
+								<a class="dropdown-item" asp-area="" asp-controller="@itm.ControllerName" asp-action="@itm.ActionName">@itm.Name</a>
+							}
+						</div>
+					</li>
+				}
+			}
+		}
+	</ul>
+	<partial name="_LoginPartial" />
+</div>
